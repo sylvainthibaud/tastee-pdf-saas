@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tastee PDF Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Raleway', Calibri, sans-serif; background: #f0edf9; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 16px; }
+    .card { background: white; border-radius: 16px; padding: 40px; width: 100%; max-width: 560px; box-shadow: 0 8px 40px rgba(31,18,64,0.12); }
+    .logo { font-family: 'Anton', Impact, sans-serif; font-size: 28pt; color: #1f1240; margin-bottom: 4px; letter-spacing: 1px; }
+    .subtitle { font-size: 11pt; color: #888; margin-bottom: 32px; }
+    label { display: block; font-weight: 700; font-size: 10pt; color: #1f1240; margin-bottom: 8px; }
+    input[type="url"] { width: 100%; padding: 14px 16px; border: 2px solid #e0dbf5; border-radius: 8px; font-family: 'Raleway', sans-serif; font-size: 11pt; color: #1f1240; outline: none; transition: border-color .2s; }
+    input[type="url"]:focus { border-color: #614dd4; }
+    input[type="url"]::placeholder { color: #bbb; }
+    .hint { font-size: 9pt; color: #aaa; margin-top: 6px; font-style: italic; }
+    button { margin-top: 20px; width: 100%; padding: 16px; background: #614dd4; color: white; border: none; border-radius: 8px; font-family: 'Anton', Impact, sans-serif; font-size: 14pt; cursor: pointer; letter-spacing: 0.5px; transition: background .2s; }
+    button:hover:not(:disabled) { background: #4e3ab5; }
+    button:disabled { background: #bbb; cursor: not-allowed; }
+    .status { margin-top: 20px; padding: 14px 16px; border-radius: 8px; font-size: 10pt; display: none; }
+    .status.loading { display: flex; align-items: center; gap: 12px; background: #f0edf9; color: #614dd4; font-weight: 600; }
+    .status.success { display: block; background: #e8f5e9; color: #2e7d32; font-weight: 600; }
+    .status.error { display: block; background: #fce4ec; color: #c62828; }
+    .spinner { width: 20px; height: 20px; border: 3px solid #e0dbf5; border-top-color: #614dd4; border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .steps { margin-top: 32px; border-top: 1px solid #e0dbf5; padding-top: 20px; }
+    .steps-title { font-size: 9pt; text-transform: uppercase; letter-spacing: 1px; color: #bbb; margin-bottom: 12px; }
+    .step { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+    .step-num { width: 24px; height: 24px; border-radius: 50%; background: #1f1240; color: white; font-size: 9pt; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-text { font-size: 10pt; color: #555; padding-top: 3px; }
+    .footer-note { margin-top: 16px; text-align: center; font-size: 8pt; color: #ccc; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">TASTEE</div>
+  <div class="subtitle">Generateur de fiches PDF automatique</div>
+  <label for="url-input">Lien du rapport Tastee</label>
+  <input type="url" id="url-input" placeholder="https://tastee.wine/fr/reports/1234/share?token=..." autofocus>
+  <div class="hint">Colle ici le lien de partage du rapport Tastee.</div>
+  <button id="generate-btn" onclick="generate()">Generer le PDF</button>
+  <div class="status" id="status-box">
+    <div class="spinner" id="spinner"></div>
+    <span id="status-text">Analyse du rapport en cours...</span>
+  </div>
+  <div class="steps">
+    <div class="steps-title">Comment ca marche</div>
+    <div class="step"><div class="step-num">1</div><div class="step-text">Ouvre le rapport Tastee et copie l'URL de ta barre d'adresse.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text">Colle-la ci-dessus et clique sur Generer le PDF.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text">Le PDF se telecharge automatiquement en quelques secondes.</div></div>
+  </div>
+</div>
+<div class="footer-note">Powered by Winespace - Tastee</div>
+<script>
+async function generate() {
+  const url = document.getElementById('url-input').value.trim();
+  const btn = document.getElementById('generate-btn');
+  if (!url) { showStatus('error', 'Merci de coller un lien Tastee.'); return; }
+  btn.disabled = true;
+  showStatus('loading', 'Analyse du rapport en cours...');
+  try {
+    const res = await fetch('/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
+    if (!res.ok) { const err = await res.json().catch(() => ({ error: 'Erreur inconnue' })); showStatus('error', err.error || 'Erreur.'); return; }
+    const blob = await res.blob();
+    const disposition = res.headers.get('Content-Disposition') || '';
+    const m = disposition.match(/filename="?([^"]+)"?/);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = m ? m[1] : 'Tastee_rapport.pdf';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showStatus('success', 'PDF genere et telecharge !');
+  } catch (e) { showStatus('error', 'Erreur de connexion.'); }
+  finally { btn.disabled = false; }
+}
+function showStatus(t, msg) {
+  const b = document.getElementById('status-box'), tx = document.getElementById('status-text'), sp = document.getElementById('spinner');
+  b.className = 'status ' + t; tx.textContent = msg; sp.style.display = t === 'loading' ? 'block' : 'none';
+}
+document.getElementById('url-input').addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+</script>
+</body>
+</html>
