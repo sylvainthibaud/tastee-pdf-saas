@@ -1,0 +1,4 @@
+flask>=3.0
+playwright>=1.44
+weasyprint>=62.0
+gunicorn>=22.0

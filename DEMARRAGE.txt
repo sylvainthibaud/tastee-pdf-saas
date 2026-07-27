@@ -1,0 +1,93 @@
+╔══════════════════════════════════════════════════════════════╗
+║          TASTEE PDF GENERATOR — GUIDE DE DÉMARRAGE          ║
+╚══════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OPTION A : EN LOCAL (sur ton ordinateur)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Pré-requis : Python 3.11+ installé sur ton Mac/PC
+             (télécharger sur https://python.org)
+
+1. Ouvre un Terminal (Mac) ou l'Invite de commandes (Windows)
+
+2. Va dans le dossier de l'application :
+   cd chemin/vers/tastee-pdf-saas
+
+3. Installe les dépendances (une seule fois) :
+   pip install -r requirements.txt
+   playwright install chromium
+
+4. Lance l'application :
+   python app.py
+
+5. Ouvre ton navigateur et va sur :
+   http://localhost:5000
+
+6. Colle une URL Tastee → clique Générer → le PDF se télécharge !
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OPTION B : EN LIGNE sur Railway (accessible depuis partout)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Railway est une plateforme d'hébergement simple, gratuit pour commencer.
+
+1. Crée un compte gratuit sur https://railway.app
+
+2. Crée un compte GitHub sur https://github.com (si pas déjà fait)
+   et mets le dossier tastee-pdf-saas dans un nouveau repository.
+
+3. Sur Railway :
+   - Clique "New Project"
+   - Choisis "Deploy from GitHub repo"
+   - Sélectionne ton repo tastee-pdf-saas
+   - Railway détecte tout automatiquement et lance le déploiement
+
+4. En quelques minutes, ton app est en ligne avec une URL publique
+   du type : https://tastee-pdf-saas.up.railway.app
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+UTILISATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+L'interface est simple :
+  1. Ouvre un rapport sur tastee.wine
+  2. Copie l'URL de la page (ex: https://tastee.wine/fr/reports/1234/share?token=...)
+  3. Colle-la dans le champ de l'application
+  4. Clique "Générer le PDF"
+  5. Le PDF se télécharge automatiquement
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CONTENU DU PDF GÉNÉRÉ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ En-tête Tastee/Winespace avec nom du rapport et date
+✓ Fiche produit avec packshot, producteur, appellation
+✓ Arômes dominants
+✓ Caractéristiques principales avec barres visuelles
+✓ Balance qualitative (points forts / points faibles)
+✓ Résumé qualitatif en tableau
+✓ Analyse des scores (min / moyenne / max / médiane)
+✓ Charte graphique Tastee (#1f1240 / #614dd4)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STRUCTURE DES FICHIERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+app.py            → serveur principal
+scraper.py        → extraction des données Tastee
+pdf_generator.py  → mise en forme et génération PDF
+templates/        → interface web (HTML)
+requirements.txt  → liste des bibliothèques Python
+railway.json      → configuration déploiement Railway
+nixpacks.toml     → configuration build Railway
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BESOIN D'AIDE ?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Tu peux demander à Claude dans Cowork de t'aider pour :
+- Personnaliser le design du PDF
+- Ajouter des sections (commentaires, graphiques)
+- Configurer le déploiement Railway
+- Ajouter un mot de passe de protection
