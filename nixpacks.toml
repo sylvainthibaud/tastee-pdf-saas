@@ -3,7 +3,7 @@ nixPkgs = ["python311", "gobject-introspection", "cairo", "pango", "gdk-pixbuf",
 
 [phases.install]
 cmds = [
-  "pip install -r requirements.txt",
+  "python3 -m pip install -r requirements.txt",
   "playwright install chromium",
   "playwright install-deps chromium"
 ]
